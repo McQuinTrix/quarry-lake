@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2316 1454" role="img" aria-labelledby="title desc">
+  <title id="title">Exact funky Quarry Lakes map</title>
+  <desc id="desc">The original Quarry Lakes screenshot preserved with posterized color, paper grain, and personal website annotations.</desc>
+  <defs>
+    <filter id="funky-map" x="-2%" y="-2%" width="104%" height="104%">
+      <feComponentTransfer result="poster">
+        <feFuncR type="discrete" tableValues="0.02 0.12 0.24 0.48 0.76 0.96"/>
+        <feFuncG type="discrete" tableValues="0.03 0.16 0.34 0.58 0.82 1"/>
+        <feFuncB type="discrete" tableValues="0.04 0.12 0.26 0.54 0.78 0.96"/>
+      </feComponentTransfer>
+      <feColorMatrix
+        in="poster"
+        type="matrix"
+        values="1.18 0.08 0.00 0 0.01
+                0.00 1.10 0.04 0 0.02
+                0.00 0.10 1.22 0 0.00
+                0.00 0.00 0.00 1 0"
+        result="color"
+      />
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="14" result="grain"/>
+      <feColorMatrix in="grain" type="saturate" values="0"/>
+      <feComponentTransfer result="grain-alpha">
+        <feFuncA type="table" tableValues="0 0.18"/>
+      </feComponentTransfer>
+      <feBlend in="color" in2="grain-alpha" mode="multiply"/>
+    </filter>
+    <linearGradient id="warm-edge" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffcf4f" stop-opacity="0.2"/>
+      <stop offset="0.48" stop-color="#00d2b8" stop-opacity="0"/>
+      <stop offset="1" stop-color="#ff5f45" stop-opacity="0.24"/>
+    </linearGradient>
+    <style>
+      .base { filter: url(#funky-map); }
+      .wash { fill: url(#warm-edge); mix-blend-mode: color; }
+      .lake-pop { fill: #005c6d; opacity: 0.28; mix-blend-mode: color; }
+      .trail-pop { fill: none; stroke: #ff5748; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 26 18; opacity: 0.8; }
+      .trail-pop-yellow { fill: none; stroke: #ffe04a; stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 18 16; opacity: 0.76; }
+      .note-bg { fill: #f8df8d; stroke: #0b3433; stroke-width: 5; }
+      .note-red { fill: #ff674f; stroke: #0b3433; stroke-width: 5; }
+      .title { font: 900 96px/1 "Arial Rounded MT Bold", "Trebuchet MS", sans-serif; fill: #073f43; letter-spacing: 0; }
+      .note { font: 800 34px/1.05 "Trebuchet MS", sans-serif; fill: #073f43; letter-spacing: 0; }
+      .note-light { font: 800 32px/1.05 "Trebuchet MS", sans-serif; fill: #fff2bf; letter-spacing: 0; }
+    </style>
+  </defs>
+
+  <image class="base" href="quarry-lakes-source-map.png" x="0" y="0" width="2316" height="1454" preserveAspectRatio="xMidYMid meet"/>
+  <rect class="wash" x="0" y="0" width="2316" height="1454"/>
+
+  <g id="quarry-lakes-emphasis">
+    <path class="lake-pop" d="M 145 680 C 245 530, 408 483, 577 560 C 662 598, 715 675, 704 784 C 691 913, 566 1045, 386 1026 C 211 1007, 87 889, 102 760 C 105 728, 121 703, 145 680 Z"/>
+    <path class="lake-pop" d="M 539 416 C 648 342, 804 381, 857 503 C 910 625, 826 740, 686 738 C 569 736, 480 655, 475 542 C 472 493, 496 446, 539 416 Z"/>
+    <path class="lake-pop" d="M 806 517 C 980 428, 1193 499, 1241 670 C 1282 817, 1134 981, 918 978 C 715 975, 588 845, 625 689 C 642 616, 702 570, 806 517 Z"/>
+    <path class="lake-pop" d="M 1183 728 C 1361 612, 1621 676, 1687 846 C 1757 1025, 1543 1196, 1281 1160 C 1053 1128, 969 942, 1087 803 C 1114 772, 1147 748, 1183 728 Z"/>
+    <path class="lake-pop" d="M 1510 737 C 1618 651, 1789 665, 1892 752 C 1983 829, 1963 971, 1839 1034 C 1705 1103, 1531 1062, 1458 954 C 1412 887, 1425 805, 1510 737 Z"/>
+    <path class="trail-pop" d="M 470 480 C 570 445, 696 466, 792 537 C 894 612, 883 760, 777 833 C 655 916, 455 885, 356 771 C 280 683, 322 532, 470 480 Z"/>
+    <path class="trail-pop-yellow" d="M 742 470 C 908 574, 1127 648, 1432 746"/>
+  </g>
+
+  <g id="personal-annotations">
+    <path class="note-bg" d="M 65 82 C 255 55, 438 70, 610 112 L 573 288 C 394 249, 228 244, 59 286 Z"/>
+    <text class="title" x="96" y="170">Quarry</text>
+    <text class="title" x="111" y="258">Lakes</text>
+
+    <path class="note-red" d="M 596 810 C 735 787, 847 806, 951 862 L 914 939 C 803 895, 699 881, 582 899 Z"/>
+    <text class="note-light" x="618" y="876">my usual loop</text>
+
+    <path class="note-bg" d="M 1400 545 C 1545 517, 1672 530, 1798 582 L 1764 654 C 1638 620, 1516 610, 1383 631 Z"/>
+    <text class="note" x="1424" y="604">Niles side</text>
+  </g>
+</svg>
