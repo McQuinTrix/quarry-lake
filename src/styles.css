@@ -1,6 +1,6 @@
 :root {
   color: #17322d;
-  background: #f3e4ba;
+  background: #e9dfb0;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
@@ -12,227 +12,390 @@
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   margin: 0;
-  min-width: 1120px;
-  background:
-    radial-gradient(circle at 12% 20%, rgba(255, 97, 72, 0.2), transparent 28%),
-    linear-gradient(135deg, #f7e9bf 0%, #c7d890 48%, #52a9a0 100%);
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.shell {
+  min-width: 1180px;
   min-height: 100vh;
-  padding: 26px 32px 42px;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255, 216, 79, 0.28), transparent 30%),
+    linear-gradient(135deg, #f6e0aa 0%, #c8d98f 52%, #63aaa2 100%);
 }
 
-.topbar {
-  width: min(100%, 1480px);
-  height: 68px;
-  margin: 0 auto 24px;
+button {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 0;
+}
+
+.map-explorer {
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  border: 0;
+  background: #fff7d6;
+  box-shadow: none;
+}
+
+.map-pane {
+  position: relative;
+  min-height: 0;
+  padding-top: 138px;
+  overflow: hidden;
+  border-right: 4px solid #17322d;
+  background:
+    linear-gradient(rgba(23, 50, 45, 0.18), rgba(23, 50, 45, 0.18)),
+    #496057;
+}
+
+.map-title {
+  position: absolute;
+  z-index: 2;
+  top: 28px;
+  left: 38px;
+  max-width: 250px;
+  padding: 18px 20px;
+  border: 3px solid #17322d;
+  background: rgba(255, 247, 214, 0.92);
+  box-shadow: 7px 7px 0 #17322d;
+}
+
+.map-title p,
+.panel-heading p,
+.selection-summary p {
+  margin: 0;
+  color: rgba(23, 50, 45, 0.66);
+  font-size: 13px;
+  font-weight: 950;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.map-title h1 {
+  margin: 7px 0 0;
+  font-size: 38px;
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.map-scene {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2100 / 1200;
+  display: block;
+  background: #496057;
+}
+
+.trail-path {
+  fill: none;
+  stroke: var(--trail-color);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 20 16;
+  opacity: 0.14;
+  filter: drop-shadow(0 3px 0 rgba(23, 50, 45, 0.8));
+  pointer-events: none;
+  transition:
+    opacity 180ms ease,
+    stroke-width 180ms ease,
+    filter 180ms ease;
+}
+
+.trail-path.is-active,
+.trail-path.is-selected {
+  stroke-width: 12;
+  opacity: 0.95;
+  filter: drop-shadow(0 5px 0 rgba(23, 50, 45, 0.86));
+}
+
+.landmark-marker {
+  cursor: pointer;
+  opacity: 0.5;
+  outline: none;
+  transition: opacity 150ms ease;
+}
+
+.landmark-marker.is-visible,
+.landmark-marker.is-active {
+  opacity: 1;
+}
+
+.landmark-hit-area {
+  fill: transparent;
+}
+
+.landmark-ring {
+  fill: rgba(255, 247, 214, 0.1);
+  stroke: #fff7d6;
+  stroke-width: 3;
+  opacity: 0;
+  transition:
+    opacity 160ms ease,
+    r 160ms ease;
+}
+
+.landmark-dot {
+  fill: #ff674f;
+  stroke: #17322d;
+  stroke-width: 4;
+  filter: drop-shadow(0 4px 0 rgba(23, 50, 45, 0.5));
+  transition:
+    fill 160ms ease,
+    r 160ms ease,
+    stroke-width 160ms ease;
+}
+
+.landmark-label {
+  fill: #fff7d6;
+  font-size: 15px;
+  font-weight: 950;
+  letter-spacing: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.landmark-name {
+  fill: #fff7d6;
+  paint-order: stroke;
+  stroke: #17322d;
+  stroke-width: 8;
+  stroke-linejoin: round;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+  pointer-events: none;
+}
+
+.landmark-marker:is(:hover, :focus-visible) .landmark-ring,
+.landmark-marker.is-active .landmark-ring {
+  opacity: 1;
+  r: 30px;
+}
+
+.landmark-marker:is(:hover, :focus-visible) .landmark-dot,
+.landmark-marker.is-active .landmark-dot {
+  fill: #ffd84f;
+  r: 19px;
+}
+
+.landmark-marker:is(:hover, :focus-visible) .landmark-label,
+.landmark-marker.is-active .landmark-label {
+  fill: #17322d;
+}
+
+.landmark-marker:is(:hover, :focus-visible) .landmark-name,
+.landmark-marker.is-active .landmark-name {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.side-panel {
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  background: #fff7d6;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 4px solid #17322d;
+}
+
+.tabs button {
+  min-height: 94px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  justify-content: center;
+  gap: 10px;
+  border: 0;
+  background: #fff7d6;
+  color: #17322d;
+  font-size: 24px;
+  font-weight: 950;
+  letter-spacing: 0;
+  cursor: pointer;
 }
 
-.brand {
-  display: inline-flex;
-  align-items: center;
+.tabs button + button {
+  border-left: 4px solid #17322d;
+}
+
+.tabs button:is(:hover, :focus-visible),
+.tabs button.is-active {
+  background: #ffd84f;
+  outline: none;
+}
+
+.panel-content {
+  min-height: 0;
+  padding: 24px;
+  overflow: auto;
+}
+
+.panel-heading {
+  margin-bottom: 18px;
+}
+
+.panel-heading h2 {
+  margin: 8px 0 0;
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.card-list {
+  display: grid;
+  gap: 16px;
+}
+
+.trail-card,
+.landmark-card,
+.selection-summary {
+  border: 3px solid #17322d;
+  background: rgba(255, 255, 255, 0.52);
+  box-shadow: 5px 5px 0 #17322d;
+}
+
+.trail-card,
+.landmark-card {
+  padding: 16px;
+  cursor: pointer;
+}
+
+.trail-card.is-selected,
+.landmark-card.is-selected {
+  background: rgba(255, 216, 79, 0.24);
+}
+
+.trail-card:focus-visible,
+.landmark-card:focus-visible {
+  outline: 3px solid #2f9bff;
+  outline-offset: -8px;
+}
+
+.card-title {
+  width: 100%;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 46px 1fr;
   gap: 12px;
-  font-size: 22px;
-  font-weight: 900;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: #17322d;
+  text-align: left;
 }
 
-.brand-mark {
+.card-title span {
   width: 46px;
   height: 46px;
   display: grid;
   place-items: center;
   border: 3px solid #17322d;
-  background: #ff674f;
+  background: var(--trail-color, #ff674f);
   color: #fff7d6;
-  box-shadow: 5px 5px 0 #17322d;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 26px;
-  font-size: 16px;
-  font-weight: 800;
-}
-
-.hero {
-  width: min(100%, 1480px);
-  min-height: 720px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 370px 1fr;
-  gap: 26px;
-  align-items: stretch;
-}
-
-.hero-copy {
-  padding: 32px 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.eyebrow {
-  margin: 0 0 18px;
-  color: #00606b;
   font-size: 15px;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 950;
+  box-shadow: 3px 3px 0 #17322d;
 }
 
-h1,
-h2,
-p {
-  margin-top: 0;
-}
-
-h1 {
-  max-width: 10ch;
-  margin-bottom: 22px;
-  font-size: 78px;
-  line-height: 0.92;
+.card-title strong {
+  font-size: 21px;
+  line-height: 1.05;
   letter-spacing: 0;
 }
 
-.hero-copy p:not(.eyebrow) {
-  max-width: 33ch;
-  margin-bottom: 0;
-  color: rgba(23, 50, 45, 0.78);
-  font-size: 20px;
-  line-height: 1.45;
-  font-weight: 650;
+.trail-card p,
+.landmark-card p {
+  margin: 14px 0 0;
+  color: rgba(23, 50, 45, 0.72);
+  font-size: 15px;
+  line-height: 1.42;
+  font-weight: 700;
 }
 
-.map-stage {
-  min-width: 0;
-  margin: 0;
-  align-self: stretch;
+.chip-row,
+.related-trails {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 14px;
 }
 
-.map-stage img {
-  width: 100%;
-  aspect-ratio: 2316 / 1454;
-  display: block;
-  object-fit: cover;
-  border: 4px solid #17322d;
-  box-shadow: 14px 14px 0 #17322d;
-  background: #496057;
+.chip-row button,
+.related-trails button {
+  width: 34px;
+  height: 30px;
+  border: 2px solid #17322d;
+  background: #fff7d6;
+  color: #17322d;
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #17322d;
 }
 
-.map-stage figcaption {
-  max-width: 780px;
-  margin-top: 18px;
-  color: rgba(23, 50, 45, 0.74);
-  font-size: 14px;
-  font-weight: 750;
+.related-trails button {
+  background: var(--trail-color);
 }
 
-.note-grid {
-  width: min(100%, 1480px);
-  margin: 38px auto 0;
+.selection-summary {
+  margin: 0 24px 24px;
+  padding: 16px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
 }
 
-.note-card,
-.plan {
-  border: 3px solid #17322d;
-  background: rgba(255, 247, 214, 0.82);
-  box-shadow: 7px 7px 0 #17322d;
-}
-
-.note-card {
-  min-height: 168px;
-  padding: 22px;
-}
-
-.note-card svg,
-.plan svg {
+.selection-summary svg {
   color: #ff674f;
 }
 
-.note-card h2,
-.plan h2 {
-  margin: 14px 0 8px;
-  font-size: 24px;
-  line-height: 1;
+.selection-summary h2 {
+  margin: 6px 0 6px;
+  font-size: 22px;
+  line-height: 1.05;
   letter-spacing: 0;
 }
 
-.note-card p,
-.plan p {
-  margin-bottom: 0;
-  color: rgba(23, 50, 45, 0.76);
-  font-size: 16px;
-  line-height: 1.45;
-  font-weight: 650;
+.selection-summary span {
+  color: rgba(23, 50, 45, 0.74);
+  font-size: 14px;
+  font-weight: 850;
 }
 
-.plan {
-  width: min(100%, 1480px);
-  margin: 24px auto 0;
-  padding: 24px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 18px;
-  align-items: start;
+.landmark-summary {
+  margin-top: -8px;
 }
 
-.plan h2 {
-  margin-top: 0;
-}
-
-@media (max-width: 1119px) {
+@media (max-width: 1179px) {
   body {
     min-width: 0;
   }
 
-  .shell {
-    padding: 18px;
+  .app-shell {
+    padding: 0;
   }
 
-  .topbar,
-  .hero,
-  .note-grid,
-  .plan {
-    width: 100%;
-  }
-
-  .nav-links {
-    display: none;
-  }
-
-  .hero {
-    min-height: 0;
+  .map-explorer {
     grid-template-columns: 1fr;
   }
 
-  h1 {
-    max-width: 11ch;
-    font-size: 52px;
-  }
-
-  .note-grid {
-    grid-template-columns: 1fr;
+  .map-pane {
+    border-right: 0;
+    border-bottom: 4px solid #17322d;
   }
 }
