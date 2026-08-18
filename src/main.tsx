@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
-import { Landmark, MapPin, Route } from "lucide-react";
+import { Landmark, Route } from "lucide-react";
 import "./styles.css";
 
 type LandmarkPoint = {
@@ -20,6 +20,11 @@ type Trail = {
   path: string;
   color: string;
   landmarkIds: string[];
+};
+
+type Point = {
+  x: number;
+  y: number;
 };
 
 const landmarks: LandmarkPoint[] = [
@@ -408,19 +413,138 @@ const trails: Trail[] = [
   },
 ];
 
+const LANDMARK_TRAIL_DISTANCE = 42;
+
+function tokenizePath(path: string) {
+  return path.match(/[MLHVZ]|-?\d+(?:\.\d+)?/g) ?? [];
+}
+
+function readNumber(tokens: string[], index: number) {
+  return {
+    value: Number(tokens[index]),
+    nextIndex: index + 1,
+  };
+}
+
+function pathToSegments(path: string) {
+  const tokens = tokenizePath(path);
+  const segments: Array<[Point, Point]> = [];
+  let index = 0;
+  let command = "";
+  let current: Point = { x: 0, y: 0 };
+  let subpathStart: Point = { x: 0, y: 0 };
+
+  while (index < tokens.length) {
+    const token = tokens[index];
+    if (/^[MLHVZ]$/.test(token)) {
+      command = token;
+      index += 1;
+    }
+
+    if (command === "M" || command === "L") {
+      const x = readNumber(tokens, index);
+      const y = readNumber(tokens, x.nextIndex);
+      const nextPoint = { x: x.value, y: y.value };
+      if (command === "L") {
+        segments.push([current, nextPoint]);
+      } else {
+        subpathStart = nextPoint;
+      }
+      current = nextPoint;
+      index = y.nextIndex;
+      continue;
+    }
+
+    if (command === "H") {
+      const x = readNumber(tokens, index);
+      const nextPoint = { x: x.value, y: current.y };
+      segments.push([current, nextPoint]);
+      current = nextPoint;
+      index = x.nextIndex;
+      continue;
+    }
+
+    if (command === "V") {
+      const y = readNumber(tokens, index);
+      const nextPoint = { x: current.x, y: y.value };
+      segments.push([current, nextPoint]);
+      current = nextPoint;
+      index = y.nextIndex;
+      continue;
+    }
+
+    if (command === "Z") {
+      segments.push([current, subpathStart]);
+      current = subpathStart;
+      command = "";
+      continue;
+    }
+
+    index += 1;
+  }
+
+  return segments;
+}
+
+function distanceToSegment(point: Point, start: Point, end: Point) {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const lengthSquared = dx * dx + dy * dy;
+
+  if (lengthSquared === 0) {
+    return Math.hypot(point.x - start.x, point.y - start.y);
+  }
+
+  const t = Math.max(
+    0,
+    Math.min(
+      1,
+      ((point.x - start.x) * dx + (point.y - start.y) * dy) / lengthSquared,
+    ),
+  );
+  const projection = {
+    x: start.x + t * dx,
+    y: start.y + t * dy,
+  };
+
+  return Math.hypot(point.x - projection.x, point.y - projection.y);
+}
+
+function distanceToPath(point: Point, path: string) {
+  return Math.min(
+    ...pathToSegments(path).map(([start, end]) =>
+      distanceToSegment(point, start, end),
+    ),
+  );
+}
+
+const trailsWithNearbyLandmarks: Trail[] = trails.map((trail) => ({
+  ...trail,
+  landmarkIds: landmarks
+    .filter(
+      (landmarkPoint) =>
+        distanceToPath(landmarkPoint, trail.path) <= LANDMARK_TRAIL_DISTANCE,
+    )
+    .map((landmarkPoint) => landmarkPoint.id),
+}));
+
 type PanelTab = "trails" | "landmarks";
 
 function App() {
   const [activeTab, setActiveTab] = useState<PanelTab>("trails");
-  const [selectedTrailId, setSelectedTrailId] = useState(trails[0].id);
+  const [selectedTrailId, setSelectedTrailId] = useState(
+    trailsWithNearbyLandmarks[0].id,
+  );
   const [selectedLandmarkId, setSelectedLandmarkId] = useState<string | null>(null);
   const [hoveredTrailId, setHoveredTrailId] = useState<string | null>(null);
   const [hoveredLandmarkId, setHoveredLandmarkId] = useState<string | null>(null);
 
   const selectedTrail =
-    trails.find((trail) => trail.id === selectedTrailId) ?? trails[0];
+    trailsWithNearbyLandmarks.find((trail) => trail.id === selectedTrailId) ??
+    trailsWithNearbyLandmarks[0];
   const activeTrail =
-    trails.find((trail) => trail.id === hoveredTrailId) ?? selectedTrail;
+    trailsWithNearbyLandmarks.find((trail) => trail.id === hoveredTrailId) ??
+    selectedTrail;
 
   const selectedLandmark = selectedLandmarkId
     ? landmarks.find((landmarkPoint) => landmarkPoint.id === selectedLandmarkId) ??
@@ -428,14 +552,10 @@ function App() {
     : null;
 
   const visibleLandmarkIds = new Set([
-    ...selectedTrail.landmarkIds,
+    ...activeTrail.landmarkIds,
     ...(selectedLandmark ? [selectedLandmark.id] : []),
     ...(hoveredLandmarkId ? [hoveredLandmarkId] : []),
   ]);
-
-  const trailsForSelectedLandmark = selectedLandmark
-    ? trails.filter((trail) => trail.landmarkIds.includes(selectedLandmark.id))
-    : [];
 
   const selectTrail = (trailId: string) => {
     setSelectedTrailId(trailId);
@@ -474,7 +594,7 @@ function App() {
             />
 
             <g className="trail-layer" aria-hidden="true">
-              {trails.map((trail) => (
+              {trailsWithNearbyLandmarks.map((trail) => (
                 <path
                   className={`trail-path ${
                     activeTrail.id === trail.id ? "is-active" : ""
@@ -559,7 +679,7 @@ function App() {
                   <h2>Trails</h2>
                 </div>
                 <div className="card-list">
-                  {trails.map((trail) => (
+                  {trailsWithNearbyLandmarks.map((trail) => (
                     <article
                       className={`trail-card ${
                         selectedTrail.id === trail.id ? "is-selected" : ""
@@ -619,7 +739,7 @@ function App() {
                 </div>
                 <div className="card-list">
                   {landmarks.map((landmarkPoint) => {
-                    const relatedTrails = trails.filter((trail) =>
+                    const relatedTrails = trailsWithNearbyLandmarks.filter((trail) =>
                       trail.landmarkIds.includes(landmarkPoint.id),
                     );
                     return (
@@ -674,21 +794,6 @@ function App() {
             )}
           </div>
 
-          {selectedLandmark ? (
-            <div className="selection-summary landmark-summary">
-              <MapPin aria-hidden="true" size={21} />
-              <div>
-                <p>Selected landmark</p>
-                <h2>{selectedLandmark.name}</h2>
-                <span>
-                  Trails:{" "}
-                  {trailsForSelectedLandmark
-                    .map((trail) => trail.shortLabel)
-                    .join(", ")}
-                </span>
-              </div>
-            </div>
-          ) : null}
         </aside>
       </section>
     </main>

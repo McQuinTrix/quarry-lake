@@ -65,8 +65,7 @@ button {
 }
 
 .map-title p,
-.panel-heading p,
-.selection-summary p {
+.panel-heading p {
   margin: 0;
   color: rgba(23, 50, 45, 0.66);
   font-size: 13px;
@@ -262,8 +261,7 @@ button {
 }
 
 .trail-card,
-.landmark-card,
-.selection-summary {
+.landmark-card {
   border: 3px solid #17322d;
   background: rgba(255, 255, 255, 0.52);
   box-shadow: 5px 5px 0 #17322d;
@@ -350,35 +348,6 @@ button {
 
 .related-trails button {
   background: var(--trail-color);
-}
-
-.selection-summary {
-  margin: 0 24px 24px;
-  padding: 16px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 12px;
-}
-
-.selection-summary svg {
-  color: #ff674f;
-}
-
-.selection-summary h2 {
-  margin: 6px 0 6px;
-  font-size: 22px;
-  line-height: 1.05;
-  letter-spacing: 0;
-}
-
-.selection-summary span {
-  color: rgba(23, 50, 45, 0.74);
-  font-size: 14px;
-  font-weight: 850;
-}
-
-.landmark-summary {
-  margin-top: -8px;
 }
 
 @media (max-width: 1179px) {
